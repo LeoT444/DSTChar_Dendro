@@ -4,17 +4,15 @@ local assets = {
     Asset("SCRIPT", "scripts/prefabs/player_common.lua"),
 }
 
+
 -- Your character's stats
-TUNING.DENDRO_HEALTH = 150
-TUNING.DENDRO_HUNGER = 150
-TUNING.DENDRO_SANITY = 200
+TUNING.DENDRO_HEALTH = 200
+TUNING.DENDRO_HUNGER = 175
+TUNING.DENDRO_SANITY = 150
 
 -- Custom starting inventory
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.DENDRO = {
-	"flint",
-	"flint",
-	"twigs",
-	"twigs",
+	"dendro_bamboo"
 }
 
 local start_inv = {}
@@ -51,6 +49,12 @@ end
 local common_postinit = function(inst) 
 	-- Minimap icon
 	inst.MiniMapEntity:SetIcon( "dendro.tex" )
+
+	-- Character specific (optional)
+	inst:AddTag("monk")
+    inst:AddTag("vegetarian")
+    inst:AddTag("")
+    inst:AddTag("")
 end
 
 -- This initializes for the server only. Components are added here.
@@ -70,7 +74,10 @@ local master_postinit = function(inst)
 	inst.components.sanity:SetMax(TUNING.DENDRO_SANITY)
 	
 	-- Damage multiplier (optional)
-    inst.components.combat.damagemultiplier = 1
+    inst.components.combat.damagemultiplier = 0.5
+
+	-- Sanity drain at night (optional)
+	inst.components.sanity.night_drain_mult = 0 
 	
 	-- Hunger rate (optional)
 	inst.components.hunger.hungerrate = 1 * TUNING.WILSON_HUNGER_RATE
