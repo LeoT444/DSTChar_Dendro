@@ -1,3 +1,7 @@
+
+
+
+
 local MakePlayerCharacter = require "prefabs/player_common"
 
 local assets = {
@@ -9,6 +13,30 @@ local assets = {
 TUNING.DENDRO_HEALTH = 200
 TUNING.DENDRO_HUNGER = 175
 TUNING.DENDRO_SANITY = 150
+
+
+-- Custom funcions --
+
+-- function to give a bonus when eating food, in this case, the hungrier the character is, the more hunger it will restore. If the character is with 0 hunger, it will restore 18 hunger.
+local function foodBonus(inst, food)
+	if inst.components.hunger then
+		local oncurrent = inst.components.hunger:oncurrent()
+		local onmax = inst.components.hunger:onmax()
+		if oncurrent > 0 then
+    		inst.components.hunger:DoDelta(onmax/(oncurrent/10))
+		else
+			inst.components.hunger:DoDelta(18)		
+		end
+  	end
+end
+
+-- Function to reduce sanity when killing non-player characters
+local function onKill(inst, data)
+	local victim = data.victim
+	if victim and not victim:HasTag("player") and inst.components.sanity then
+		inst.components.sanity:DoDelta(-TUNING.SANITY_TINY)
+	end
+end
 
 -- Custom starting inventory
 TUNING.GAMEMODE_STARTING_ITEMS.DEFAULT.DENDRO = {
@@ -53,7 +81,8 @@ local common_postinit = function(inst)
 	-- Character specific (optional)
 	inst:AddTag("monk")
     inst:AddTag("vegetarian")
-    inst:AddTag("")
+    inst:RemoveTag("scarytoprey")
+	inst:AddTag("nosteal")
     inst:AddTag("")
 end
 
@@ -73,18 +102,50 @@ local master_postinit = function(inst)
 	inst.components.hunger:SetMax(TUNING.DENDRO_HUNGER)
 	inst.components.sanity:SetMax(TUNING.DENDRO_SANITY)
 	
-	-- Damage multiplier (optional)
+	-- Damage multiplier
     inst.components.combat.damagemultiplier = 0.5
 
-	-- Sanity drain at night (optional)
+	-- Sanity drain at night
 	inst.components.sanity.night_drain_mult = 0 
 	
-	-- Hunger rate (optional)
+	-- Hunger rate
 	inst.components.hunger.hungerrate = 1 * TUNING.WILSON_HUNGER_RATE
+
+	-- Insulation time
+	inst.components.temperature.inherentinsulation = TUNING.INSULATION_MED
+    inst.components.temperature.inherentsummerinsulation = TUNING.INSULATION_MED
 	
+	-- Food affinity
+	inst.components.foodaffinity:AddPrefabAffinity("barnaclesushi", TUNING.AFFINITY_15_CALORIES_MED)
+
+	-- Food bonus
+	if inst.components.eater ~= nil then
+        inst.components.eater:SetIgnoresSpoilage(true)
+        inst.components.eater:SetOnEatFn(foodBonus)
+    end
+
+	-- Loses sanity when killing non-player characters
+	inst:ListenForEvent("killed", onKill)
+
+	
+
+	
+
+	inst:AddComponent("kramped")
+
+	local kramped = inst.components.kramped
+
+	print(kramped:GetDebugString() )
+	
+	end
+
+
+
+
 	inst.OnLoad = onload
     inst.OnNewSpawn = onload
-	
 end
+
+
 
 return MakePlayerCharacter("dendro", prefabs, assets, common_postinit, master_postinit, prefabs)

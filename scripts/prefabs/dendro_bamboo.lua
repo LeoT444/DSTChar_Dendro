@@ -10,7 +10,8 @@ prefabs = {}
 local function fn()    
     local function OnEquip(inst, owner)
         owner.AnimState:OverrideSymbol("swap_object", "swap_dendro_bamboo", "swap_dendro_bamboo")        
-        owner.AnimState:Show("ARM_carry")        owner.AnimState:Hide("ARM_normal")    
+        owner.AnimState:Show("ARM_carry")        
+        owner.AnimState:Hide("ARM_normal")    
     end    
     
     local function OnUnequip(inst, owner)        
@@ -37,3 +38,14 @@ local function fn()
 end
 
 return Prefab("common/inventory/dendro_bamboo", fn, assets, prefabs)
+
+
+
+
+
+
+
+
+
+
+

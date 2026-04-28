@@ -56,6 +56,10 @@ STRINGS.CHARACTERS.DENDRO = require "speech_dendro"
 STRINGS.NAMES.DENDRO = "Dendro"
 STRINGS.SKIN_NAMES.dendro_none = "Dendro"
 
+STRINGS.NAMES.DENDRO_BAMBOO = "Dendro Bamboo"
+STRINGS.RECIPE_DESC.DENDRO_BAMBOO = "Stick go bonk."
+STRINGS.CHARACTERS.GENERIC.DESCRIBE.DENDRO_BAMBOO = "I'd hate to get whacked with this thing!"
+
 -- The skins shown in the cycle view window on the character select screen.
 -- A good place to see what you can put in here is in skinutils.lua, in the function GetSkinModes
 local skin_modes = {
@@ -72,13 +76,21 @@ local skin_modes = {
 AddModCharacter("dendro", "MALE", skin_modes)
 
 
-AddRecipe(
-    "dendro_bamboo",{
-     Ingredient("stick", 6),
-     Ingredient("rope", 2)},
-     tab_name,
-     tech_level,nil,nil,nil,1,
-     "required_tag_for_craft",
-     "images/inventoryimages/dendro_bamboo.xml",
-     "dendro_bamboo.tex"
-) 
+local Ingredient = GLOBAL.Ingredient
+local TECH = GLOBAL.TECH
+
+AddRecipe2("dendro_bamboo", -- name
+	{ -- ingredients
+		Ingredient("rope", 1),
+		Ingredient("twigs", 1),
+	},
+	TECH.SCIENCE_ONE, -- tech
+	{ -- config
+		product = "bamboo",
+		builder_tag = "monk",
+		numtogive = 1,
+	}, 
+	{ -- filters
+		"WEAPONS",
+	}
+)
